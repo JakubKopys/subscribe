@@ -14,3 +14,9 @@
 !/tmp/.keep
 
 .byebug_history
+
+# Ignore vim related files
+*.swp
+*.swo
+*.swn
+*.vim
