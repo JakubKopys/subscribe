@@ -8,7 +8,15 @@ module Api
       end
 
       def create
-        raise NotImplementedError
+        respond_with interactor: Subscriptions::Create.call(create_params)
+      end
+
+
+      private
+
+      def create_params
+        params.permit :card_cvv, :cardholder_name, :credit_card_number, :expiration_year,
+                      :expiration_month
       end
     end
   end
