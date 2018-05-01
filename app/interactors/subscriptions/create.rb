@@ -5,7 +5,7 @@ require 'subscriptions/payment_api'
 module Subscriptions
   class Create < ApplicationInteractor
     def call
-      # TODO: validate form
+      validate_form
       subscription = create_subscription
 
       context.result = { subscription_id: subscription.id }
@@ -13,6 +13,11 @@ module Subscriptions
     end
 
     private
+
+    def validate_form
+      form = CreateForm.new form_params
+      stop form.errors, :unprocessable_entity unless form.validate
+    end
 
     def form_params
       CreateForm::ATTRIBUTES.each_with_object({}) do |form_attribute, hash|
