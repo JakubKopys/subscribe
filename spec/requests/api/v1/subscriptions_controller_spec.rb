@@ -8,12 +8,6 @@ RSpec.describe Api::V1::SubscriptionsController, type: :request do
   end
 
   describe 'POST #create' do
-    context 'with wrong payment api credentials' do
-      it 'is unauthorized and returns errors' do
-        expect(Subscriptions::PaymentApi).to receive(:make_payment).and_return true
-      end
-    end
-
     context 'when payment succeeds' do
       it 'is created and saves Subscription' do
         expect(Subscriptions::PaymentApi).to receive(:make_payment).and_return true
