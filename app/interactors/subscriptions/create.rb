@@ -28,7 +28,6 @@ module Subscriptions
     end
 
     def make_payment(subscription:)
-      # TODO: differentiate errors (timeout/unauthorized/insufficient_funds)
       return if PaymentApi.make_payment subscription.attributes
 
       error = Error.new 'Insufficient funds'

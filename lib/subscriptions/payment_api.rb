@@ -5,7 +5,9 @@ require 'rest-client'
 module Subscriptions
   module PaymentApi
     extend self
+
     API_URL = 'http://localhost:4567/validate'
+    REQUEST_TIMEOUT = 10
 
     def make_payment(params)
       response = send_request
@@ -15,14 +17,16 @@ module Subscriptions
     private
 
     def send_request
-      headers = { authorization: 'Basic YmlsbGluZzpnYXRld2F5' }
-      RestClient.get(API_URL, headers)
-      # TODO: rescue unauthorized
-      # TODO: set RestClient timeout
+      RestClient::Request.execute method: :get,
+                                  url: API_URL,
+                                  user: Rails.application.secrets.payment_username,
+                                  password: Rails.application.secrets.payment_password,
+                                  read_timeout: REQUEST_TIMEOUT
+
     rescue RestClient::RequestTimeout
       send_request
-    rescue RestClient::ExceptionWithResponse => e
-      e.response
+    rescue RestClient::ServiceUnavailable => error
+      return error.response
     end
 
     def success?(response)
