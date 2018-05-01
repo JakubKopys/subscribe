@@ -20,3 +20,5 @@
 *.swo
 *.swn
 *.vim
+
+config/secrets.yml
