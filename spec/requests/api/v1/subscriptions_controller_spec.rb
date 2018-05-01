@@ -22,7 +22,9 @@ RSpec.describe Api::V1::SubscriptionsController, type: :request do
           post '/api/v1/subscriptions', params: create_params
         end.not_to change(Subscription, :count)
 
+        json_response = JSON.parse response.body
         expect(response).to be_unprocessable
+        expect(json_response).to have_key 'errors'
       end
     end
 
@@ -42,7 +44,9 @@ RSpec.describe Api::V1::SubscriptionsController, type: :request do
           post '/api/v1/subscriptions', params: create_params
         end.to change(Subscription, :count).by 1
 
+        json_response = JSON.parse response.body
         expect(response).to be_created
+        expect(json_response).to have_key 'subscription_id'
       end
     end
 
@@ -62,7 +66,9 @@ RSpec.describe Api::V1::SubscriptionsController, type: :request do
           post '/api/v1/subscriptions', params: create_params
         end.not_to change(Subscription, :count)
 
+        json_response = JSON.parse response.body
         expect(response).to be_unprocessable
+        expect(json_response).to have_key 'errors'
       end
     end
   end
