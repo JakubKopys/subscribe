@@ -21,7 +21,7 @@ class PaymentsService
     if response.fetch('paid')
       ServiceResult.new
     else
-      insufficient_funds_faiure
+      insufficient_funds_failure
     end
   end
 
@@ -35,7 +35,7 @@ class PaymentsService
     payment_failure message: 'Service Unavailable'
   end
 
-  def insufficient_funds_faiure
+  def insufficient_funds_failure
     payment_failure message: 'Insufficient funds'
   end
 
