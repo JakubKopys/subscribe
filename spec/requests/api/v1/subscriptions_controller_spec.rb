@@ -32,13 +32,7 @@ RSpec.describe Api::V1::SubscriptionsController, type: :request do
       it 'is created and saves Subscription' do
         expect(Subscriptions::PaymentApi).to receive(:make_payment).and_return true
 
-        create_params = {
-          credit_card_number: '4111111111111111',
-          cardholder_name: 'foobar',
-          card_cvv: '123',
-          expiration_year: '30',
-          expiration_month: '11'
-        }
+        create_params = FactoryBot.attributes_for :subscription
 
         expect do
           post '/api/v1/subscriptions', params: create_params
@@ -54,13 +48,7 @@ RSpec.describe Api::V1::SubscriptionsController, type: :request do
       it 'is unprocessable and does not save Subscription' do
         expect(Subscriptions::PaymentApi).to receive(:make_payment).and_return false
 
-        create_params = {
-          credit_card_number: '4111111111111111',
-          cardholder_name: 'foobar',
-          card_cvv: '123',
-          expiration_year: '30',
-          expiration_month: '11'
-        }
+        create_params = FactoryBot.attributes_for :subscription
 
         expect do
           post '/api/v1/subscriptions', params: create_params
