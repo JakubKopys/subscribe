@@ -11,7 +11,8 @@ module Subscriptions
 
     def make_payment(params)
       response = send_request
-      success? response
+      return nil unless success?(response)
+      JSON.parse response.body
     end
 
     private

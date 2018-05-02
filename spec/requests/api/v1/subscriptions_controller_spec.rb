@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'subscriptions/payment_api'
+require 'support/helpers/payment_api_helper'
 
 RSpec.describe Api::V1::SubscriptionsController, type: :request do
   describe 'GET #index' do
@@ -53,6 +53,8 @@ RSpec.describe Api::V1::SubscriptionsController, type: :request do
   end
 
   describe 'POST #create' do
+    include PaymentApiHelper
+
     context 'with invalid credit card number' do
       it 'is unprocessable and returns errors' do
         create_params = {
@@ -75,7 +77,7 @@ RSpec.describe Api::V1::SubscriptionsController, type: :request do
 
     context 'when payment succeeds' do
       it 'is created and saves Subscription' do
-        expect(Subscriptions::PaymentApi).to receive(:make_payment).and_return true
+        mock_success_payment_response
 
         create_params = FactoryBot.attributes_for :subscription
 
@@ -91,7 +93,7 @@ RSpec.describe Api::V1::SubscriptionsController, type: :request do
 
     context 'when payment fails' do
       it 'is unprocessable and does not save Subscription' do
-        expect(Subscriptions::PaymentApi).to receive(:make_payment).and_return false
+        mock_insufficient_funds_payment_response
 
         create_params = FactoryBot.attributes_for :subscription
 
@@ -101,7 +103,23 @@ RSpec.describe Api::V1::SubscriptionsController, type: :request do
 
         json_response = JSON.parse response.body
         expect(response).to be_unprocessable
-        expect(json_response).to have_key 'errors'
+        expect(json_response['errors']).to eq 'Insufficient funds'
+      end
+    end
+
+    context 'when payment api is unavailable' do
+      it 'is unprocessable and does not save Subscription' do
+        mock_service_unavailable_payment_response
+
+        create_params = FactoryBot.attributes_for :subscription
+
+        expect do
+          post '/api/v1/subscriptions', params: create_params
+        end.not_to change(Subscription, :count)
+
+        json_response = JSON.parse response.body
+        expect(response).to be_unprocessable
+        expect(json_response['errors']).to eq 'Service Unavailable'
       end
     end
   end

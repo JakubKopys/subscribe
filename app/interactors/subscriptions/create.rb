@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'subscriptions/payment_api'
-
 module Subscriptions
   class Create < ApplicationInteractor
     def call
@@ -33,9 +31,10 @@ module Subscriptions
     end
 
     def make_payment(subscription:)
-      return if PaymentApi.make_payment subscription.attributes
+      payment_result = PaymentsService.call(subscription: subscription)
+      return if payment_result.success?
 
-      error = Error.new 'Insufficient funds'
+      error = Error.new payment_result.error.message
       stop error, :unprocessable_entity
     end
   end
