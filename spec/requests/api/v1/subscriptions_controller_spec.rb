@@ -4,7 +4,26 @@ require 'rails_helper'
 require 'subscriptions/payment_api'
 
 RSpec.describe Api::V1::SubscriptionsController, type: :request do
-  xdescribe 'GET #index' do
+  describe 'GET #index' do
+    it 'returns all subscriptions with next billing dates' do
+      subscription = FactoryBot.create :subscription
+      next_billing_date = subscription.created_at + 1.month
+
+      get '/api/v1/subscriptions'
+
+      expected_json_response = [
+        {
+          id: subscription.id,
+          cardholder_name: subscription.cardholder_name,
+          created_at: subscription.created_at,
+          next_billing_date: next_billing_date
+        }
+      ].as_json
+
+      json_response = JSON.parse response.body
+      expect(response).to be_success
+      expect(json_response).to eq expected_json_response
+    end
   end
 
   describe 'POST #create' do

@@ -4,13 +4,14 @@ module Api
   module V1
     class SubscriptionsController < ApplicationController
       def index
-        raise NotImplementedError
+        # TODO: paginate/order params
+        subscriptions = Subscription.all
+        render json: subscriptions, each_serializer: Subscriptions::ListSerializer
       end
 
       def create
         respond_with interactor: Subscriptions::Create.call(create_params)
       end
-
 
       private
 
