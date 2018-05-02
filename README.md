@@ -1,24 +1,20 @@
-# README
+# App setup
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+To setup application on your machine:
 
-Things you may want to cover:
+- First, create **secrets.yml** file (based on **secrets.yml.example**)
 
-* Ruby version
+- Install dependencies
+```
+bundle install
+```
 
-* System dependencies
+- Setup database
+```
+bundle exec rails db:setup
+```
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+- Run server
+```
+bundle exec rails s
+```
