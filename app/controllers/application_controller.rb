@@ -3,6 +3,16 @@
 class ApplicationController < ActionController::API
   private
 
+  def paginate(relation:)
+    per_page = params[:per_page]&.to_i || Defaults::PER_PAGE
+    page     = params[:page]&.to_i || Defaults::PAGE
+
+    limit  = per_page
+    offset = (page - 1) * limit
+
+    relation.limit(limit).offset offset
+  end
+
   def respond_with(interactor:)
     if interactor.success?
       success_response interactor

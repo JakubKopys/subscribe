@@ -5,24 +5,50 @@ require 'subscriptions/payment_api'
 
 RSpec.describe Api::V1::SubscriptionsController, type: :request do
   describe 'GET #index' do
-    it 'returns all subscriptions with next billing dates' do
-      subscription = FactoryBot.create :subscription
-      next_billing_date = subscription.created_at + 1.month
+    context 'without pagination params' do
+      it 'returns all subscriptions with next billing dates' do
+        subscription = FactoryBot.create :subscription
+        next_billing_date = subscription.created_at + 1.month
 
-      get '/api/v1/subscriptions'
+        get '/api/v1/subscriptions'
 
-      expected_json_response = [
-        {
-          id: subscription.id,
-          cardholder_name: subscription.cardholder_name,
-          created_at: subscription.created_at,
-          next_billing_date: next_billing_date
-        }
-      ].as_json
+        expected_json_response = [
+          {
+            id: subscription.id,
+            cardholder_name: subscription.cardholder_name,
+            created_at: subscription.created_at,
+            next_billing_date: next_billing_date
+          }
+        ].as_json
 
-      json_response = JSON.parse response.body
-      expect(response).to be_success
-      expect(json_response).to eq expected_json_response
+        json_response = JSON.parse response.body
+        expect(response).to be_success
+        expect(json_response).to eq expected_json_response
+      end
+    end
+
+    context 'with pagination params' do
+      it 'returns paginated subscriptions' do
+        subscriptions = FactoryBot.create_list :subscription, 2
+        first_subscription = subscriptions.first
+        next_billing_date = first_subscription.created_at + 1.month
+
+        page_params = { page: 2, per_page: 1 }
+        get '/api/v1/subscriptions', params: page_params
+
+        expected_json_response = [
+          {
+            id: first_subscription.id,
+            cardholder_name: first_subscription.cardholder_name,
+            created_at: first_subscription.created_at,
+            next_billing_date: next_billing_date
+          }
+        ].as_json
+
+        json_response = JSON.parse response.body
+        expect(response).to be_success
+        expect(json_response).to eq expected_json_response
+      end
     end
   end
 

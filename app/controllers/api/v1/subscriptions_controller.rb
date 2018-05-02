@@ -4,8 +4,7 @@ module Api
   module V1
     class SubscriptionsController < ApplicationController
       def index
-        # TODO: paginate/order params
-        subscriptions = Subscription.all
+        subscriptions = paginate relation: Subscription.all.order(created_at: :desc)
         render json: subscriptions, each_serializer: Subscriptions::ListSerializer
       end
 
